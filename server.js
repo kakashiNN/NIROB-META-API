@@ -1,26 +1,30 @@
 import express from 'express';
 import axios from 'axios';
 import FormData from 'form-data';
+import dotenv from 'dotenv';
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 3000;
 
 app.use(express.json());
 
-// Fixed headers
+// Fixed headers from .env
 const FIXED_HEADERS = {
   'authority': 'www.meta.ai',
   'accept': '*/*',
   'cache-control': 'no-cache',
   'origin': 'https://www.meta.ai',
   'referer': 'https://www.meta.ai/prompt/5fd1da13-bea4-414b-9593-40a1e94b07a0',
-  'user-agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/117.0.0.0 Safari/537.36',
-  'cookie': 'datr=gznJaCVKeIQnAF2INbDp5qVE; dpr=1.2062500715255737; abra_sess=FsbDxamWlvUCFiAYDnZNdkVvOUZYeXlIUHJ3Fq7uyYwNAA%3D%3D; wd=980x1971',
+  'user-agent': process.env.USER_AGENT,
+  'cookie': process.env.COOKIE,
   'x-asbd-id': '359341',
   'x-fb-lsd': 'D9pSxPsEeuOJvhYxd8Ihmt'
 };
 
-app.post('/meta', async (req, res) => {
+// NIROB endpoint
+app.post('/nirob', async (req, res) => {
   try {
     const { ts, post_0, q } = req.body;
 
@@ -53,7 +57,7 @@ app.post('/meta', async (req, res) => {
           '__spin_t': ts,
           '__user': '0',
           'dpr': '1',
-          'fb_dtsg': 'NAfsHeUE6-TxYEMRY-W3-3r8dzBdirHXk8e6bUm6qMcnK2XI5kR4dCg:16:1758018455',
+          'fb_dtsg': process.env.FB_DTSG,
           'jazoest': '25268',
           'lsd': 'D9pSxPsEeuOJvhYxd8Ihmt',
           'ph': 'C3'
@@ -72,6 +76,7 @@ app.post('/meta', async (req, res) => {
   }
 });
 
+// Start server
 app.listen(PORT, () => {
-  console.log(`NIROB API running on port ${PORT}`);
+  console.log(`NIROB API RUNNING on port ${PORT}`);
 });
