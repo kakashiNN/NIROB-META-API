@@ -1,32 +1,43 @@
 import express from "express";
 import axios from "axios";
-import FormData from "form-data";
 
 const app = express();
+const PORT = process.env.PORT || 3000;
 
-app.get("/download", async (req, res) => {
+app.get("/", (req, res) => {
+  res.send("✅ Pinterest Downloader API Running...");
+});
+
+// Pinterest API endpoint
+app.get("/pview", async (req, res) => {
   try {
-    const form = new FormData();
-    form.append("url", "https://pin.it/6Qf6aPf0n");
-    form.append("Pzafq", "0f2499eb37a7945d28e1263166f4f5c4");
+    const response = await axios.get(
+      "https://l.sharethis.com/pview?event=pview&hostname=pindown.io&location=%2F&product=unknown&url=https%3A%2F%2Fpindown.io%2F&source=sharethis.js&fcmp=false&fcmpv2=false&has_segmentio=false&title=Pinterest%20Video%20Downloader%20-%20Download%20Pinterest%20Video%20HD%20Online&refDomain=www.google.com&cms=unknown&publisher=6857cc1e8ca9160019f2948f&sop=true&version=st_sop.js&lang=en&fpestid=ekOv6ZV6GmeWVg4oJvRnUHfperYdCvZoj8DdZh9sLAH1I_Gjplq1sQMJyfROvZlE47HQ3g&description=Download%20Pinterest%20video%20to%20your%20phone%2C%20PC%2C%20or%20tablet%20with%20highest%20quality.%20Use%20our%20Pinterest%20Downloader%20with%20your%20browser.%20Support%20both%20Android%2C%20and%20iOS.&ua=%22Chromium%22%3Bv%3D%22137%22%2C%20%22Not%2FA)Brand%22%3Bv%3D%2224%22&ua_mobile=true&ua_platform=Android&ua_full_version_list=%22Chromium%22%3Bv%3D%22137.0.7337.0%22%2C%20%22Not%2FA)Brand%22%3Bv%3D%2224.0.0.0%22&ua_model=RMX3261&ua_platform_version=11.0.0&uuid=0bbf587d-6752-4428-bc69-ebeed96e4fae",
+      {
+        headers: {
+          "Accept": "*/*",
+          "Accept-Language": "en-US,en;q=0.9",
+          "Cache-Control": "no-cache",
+          "Connection": "keep-alive",
+          "Cookie": "__stid=ZGSAAmjRcPwAAAAIFtd1Aw==; __stidv=2",
+          "Origin": "https://pindown.io",
+          "Pragma": "no-cache",
+          "Referer": "https://pindown.io/",
+          "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+          "sec-ch-ua": '"Chromium";v="137", "Not/A)Brand";v="24"',
+          "sec-ch-ua-mobile": "?1",
+          "sec-ch-ua-platform": '"Android"'
+        }
+      }
+    );
 
-    const response = await axios.post("https://pindown.io/action", form, {
-      headers: {
-        ...form.getHeaders(),
-        cookie:
-          "session_data=s1ftfglj67u85je73ncmn2umeq; _ga=GA1.1.1672500049.1758541716; __gads=ID=57334dcf0ecb1a85:T=1758541728:RT=1758542306:S=ALNI_MbNgA9_5hmvn8yIowUGMvyoK767RQ; __gpi=UID=000011509ff48657:T=1758541728:RT=1758542306:S=ALNI_MYaUExmK-a7V4ILLjYOWzqpCzI-ag; __eoi=ID=d165d9c3dd77fa93:T=1758541728:RT=1758542306:S=AA-AfjZDdpF4UnaFVhUZWut9Sq_A; _ga_CY8JXYCQJS=GS2.1.s1758541715$o1$g1$t1758542538$j56$l0$h0; FCNEC=%5B%5B%22AKsRol91tHWRh7c8lpTCfNZTI1f2CMHWJcOlEsWxD1PJsDlrDKu-BaKLabaZPZ0zANLLZUQa5tP5LHmIMX2m8vB51BFx4GvKqKJsIB3stU-bCNCFRBE61mXYIsJ5bFqEjmJz_aEpYleSeDXXgsZD9fuvWKClgz6k7A%3D%3D%22%5D%5D",
-        "user-agent":
-          "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
-      },
-    });
-
-    res.json(response.data);
-  } catch (err) {
-    res.status(500).json({ error: err.message });
+    res.json(response.data); // ক্লায়েন্টে JSON আকারে পাঠাচ্ছে
+  } catch (error) {
+    console.error(error.message);
+    res.status(500).json({ error: "Failed to fetch data" });
   }
 });
 
-// ✅ Render এ অবশ্যই process.env.PORT ব্যবহার করতে হবে
-app.listen(process.env.PORT || 3000, () => {
-  console.log("✅ Server running...");
+app.listen(PORT, () => {
+  console.log(`🚀 Server running on http://localhost:${PORT}`);
 });
