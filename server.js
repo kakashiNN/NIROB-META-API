@@ -4,7 +4,7 @@ const axios = require("axios");
 const app = express();
 
 // GET endpoint: /dl?url=
-app.get("/dl", async (req, res) => {
+app.get("/", async (req, res) => {
   try {
     const { url } = req.query;
     if (!url) {
