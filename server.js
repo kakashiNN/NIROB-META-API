@@ -2,42 +2,67 @@ import express from "express";
 import axios from "axios";
 
 const app = express();
-const PORT = process.env.PORT || 3000;
 
-app.get("/", (req, res) => {
-  res.send("✅ Pinterest Downloader API Running...");
-});
-
-// Pinterest API endpoint
-app.get("/pview", async (req, res) => {
+// GET endpoint: /dl?url=
+app.get("/dl", async (req, res) => {
   try {
-    const response = await axios.get(
-      "https://l.sharethis.com/pview?event=pview&hostname=pindown.io&location=%2F&product=unknown&url=https%3A%2F%2Fpindown.io%2F&source=sharethis.js&fcmp=false&fcmpv2=false&has_segmentio=false&title=Pinterest%20Video%20Downloader%20-%20Download%20Pinterest%20Video%20HD%20Online&refDomain=www.google.com&cms=unknown&publisher=6857cc1e8ca9160019f2948f&sop=true&version=st_sop.js&lang=en&fpestid=ekOv6ZV6GmeWVg4oJvRnUHfperYdCvZoj8DdZh9sLAH1I_Gjplq1sQMJyfROvZlE47HQ3g&description=Download%20Pinterest%20video%20to%20your%20phone%2C%20PC%2C%20or%20tablet%20with%20highest%20quality.%20Use%20our%20Pinterest%20Downloader%20with%20your%20browser.%20Support%20both%20Android%2C%20and%20iOS.&ua=%22Chromium%22%3Bv%3D%22137%22%2C%20%22Not%2FA)Brand%22%3Bv%3D%2224%22&ua_mobile=true&ua_platform=Android&ua_full_version_list=%22Chromium%22%3Bv%3D%22137.0.7337.0%22%2C%20%22Not%2FA)Brand%22%3Bv%3D%2224.0.0.0%22&ua_model=RMX3261&ua_platform_version=11.0.0&uuid=0bbf587d-6752-4428-bc69-ebeed96e4fae",
+    const { url } = req.query;
+    if (!url) {
+      return res.status(400).json({ error: "Missing url parameter" });
+    }
+
+    const response = await axios.post(
+      "https://pindown.io/download",
+      { url },
       {
         headers: {
-          "Accept": "*/*",
-          "Accept-Language": "en-US,en;q=0.9",
-          "Cache-Control": "no-cache",
-          "Connection": "keep-alive",
-          "Cookie": "__stid=ZGSAAmjRcPwAAAAIFtd1Aw==; __stidv=2",
-          "Origin": "https://pindown.io",
-          "Pragma": "no-cache",
-          "Referer": "https://pindown.io/",
-          "User-Agent": "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
-          "sec-ch-ua": '"Chromium";v="137", "Not/A)Brand";v="24"',
+          "authority": "pindown.io",
+          "accept-language": "en-US,en;q=0.9",
+          "cache-control": "no-cache",
+          "cookie": "_ga=GA1.1.1672500049.1758541716; fpestid=ekOv6ZV6GmeWVg4oJvRnUHfperYdCvZoj8DdZh9sLAH1I_Gjplq1sQMJyfROvZlE47HQ3g; session_data=6lnc6nuqlrofec9bg1g4etmgml; SITE_TOTAL_ID=5c880f7e3bb2491631fc24f78b77a9ac; _ga_CY8JXYCQJS=GS2.1.s1758905161$o3$g1$t1758905504$j58$l0$h0; __gads=ID=57334dcf0ecb1a85:T=1758541728:RT=1758905520:S=ALNI_MbNgA9_5hmvn8yIowUGMvyoK767RQ; __gpi=UID=000011509ff48657:T=1758541728:RT=1758905520:S=ALNI_MYaUExmK-a7V4ILLjYOWzqpCzI-ag; __eoi=ID=d165d9c3dd77fa93:T=1758541728:RT=1758905520:S=AA-AfjZDdpF4UnaFVhUZWut9Sq_A; FCNEC=%5B%5B%22AKsRol_E5NjpS1z08WYX4aEf6HYDVfxJ1hR2qerN_GtQmXandyYGnU95GVgm0Jt199IB0vbmFFxwy0mHegO5qfo_JaB3ut76UQg29sNmN4wuq42ai6wPqteDKg7mgyEpzUkpM9UWR1cWlBL59BHcYd8PKpMP593j_g%3D%3D%22%5D%5D", // replace with valid cookies
+          "origin": "https://pindown.io",
+          "pragma": "no-cache",
+          "referer": "https://pindown.io",
+          "sec-ch-ua": "\"Chromium\";v=\"137\", \"Not/A)Brand\";v=\"24\"",
           "sec-ch-ua-mobile": "?1",
-          "sec-ch-ua-platform": '"Android"'
-        }
+          "sec-ch-ua-platform": "\"Android\"",
+          "sec-fetch-dest": "empty",
+          "sec-fetch-mode": "cors",
+          "sec-fetch-site": "same-origin",
+          "user-agent":
+            "Mozilla/5.0 (Linux; Android 10; K) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/137.0.0.0 Mobile Safari/537.36",
+        },
       }
     );
 
-    res.json(response.data); // ক্লায়েন্টে JSON আকারে পাঠাচ্ছে
+    // extract needed fields
+    const data = response.data;
+    const urlx = "https://pindown.io" + data.originalVideoUrl;
+
+    const result = {
+      author: "NIROB",
+      title: data?.title || "No title",
+      thumbnail: data?.coverUrl || null,
+      url: urlx || null,
+    };
+
+    res.json(result);
   } catch (error) {
-    console.error(error.message);
-    res.status(500).json({ error: "Failed to fetch data" });
+    console.error("❌ Error fetching data:", error.message);
+    if (error.response) {
+      res.status(error.response.status).json({
+        error: true,
+        status: error.response.status,
+        data: error.response.data,
+      });
+    } else {
+      res.status(500).json({ error: "Internal server error" });
+    }
   }
 });
 
-app.listen(PORT, () => {
-  console.log(`🚀 Server running on http://localhost:${PORT}`);
-});
+// Start server
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () =>
+  console.log(`🚀 Server running on http://localhost:${PORT}`)
+);
