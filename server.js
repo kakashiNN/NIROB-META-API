@@ -4,7 +4,7 @@ const axios = require("axios");
 const app = express();
 
 // Root route - welcome message
-app.get("/", (req, res) => {
+app.get(api/nirob?url=", (req, res) => {
   res.send(`
     <h1>🚀 Welcome to Nirob Pindown API!</h1>
     <p>Use the endpoint <code>/nirob?url=YOUR_URL</code> to get video details.</p>
@@ -16,7 +16,7 @@ app.get("/", (req, res) => {
 });
 
 // /nirob endpoint
-app.get("/nirob", async (req, res) => {
+app.get("api/nirob?url=", async (req, res) => {
   try {
     const { url } = req.query;
     if (!url) {
