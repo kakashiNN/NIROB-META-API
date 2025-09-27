@@ -7,10 +7,10 @@ const app = express();
 app.get("/", (req, res) => {
   res.send(`
     <h1>🚀 Welcome to Nirob Pindown API!</h1>
-    <p>Use the endpoint <code>/nirob?url=YOUR_URL</code> to get video details.</p>
+    <p>Use the endpoint <code>/api/dl?url=YOUR_URL</code> to get video details.</p>
     <p>Example:</p>
-    <a href="/api/dl?url=ttps://www.pinterest.com/pin/736408976613433956/">
-      /nirob?url=https://www.pinterest.com/pin/736408976613433956/
+    <a href="/api/dl?url=">
+      /
     </a>
   `);
 });
