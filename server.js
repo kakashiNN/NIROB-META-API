@@ -9,7 +9,7 @@ app.get("/", (req, res) => {
     <h1>🚀 Welcome to Nirob Pindown API!</h1>
     <p>Use the endpoint <code>/api/dl?url=YOUR_URL</code> to get video details.</p>
     <p>Example:</p>
-    <a href="/api/dl?url=">
+    <a href="api/dl?url=">
       /
     </a>
   `);
